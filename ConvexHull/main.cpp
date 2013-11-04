@@ -69,7 +69,9 @@ int main(int argc, char** argv)
 
 		for (unsigned int i = 0; i < 10 * pow(2, 5); i++)
 		{
-			points->push_back(new Point(cos((float)rand() / RAND_MAX * M_PI * 2) * (float)rand() / RAND_MAX * 0.5f, sin((float)rand() / RAND_MAX * M_PI * 2) * (float)rand() / RAND_MAX * 0.5f, 0));
+			double phi = (float)rand() / RAND_MAX * M_PI * 2;
+			double r = (float)rand() / RAND_MAX * 0.5f;
+			points->push_back(new Point(cos(phi) * r, sin(phi) * r, 0));
 			//cout << "points[" << i << "] (X, Y) = (" << (*points)[i]->X << ", " << (*points)[i]->Y << ")" << endl;
 		}
 
@@ -113,7 +115,7 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);                 // Initialize GLUT
 	glutCreateWindow("OpenGL Setup Test"); // Create a window with the given title
 	glutInitWindowSize(1024, 768);   // Set the window's initial width & height
-	glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
+	glutInitWindowPosition(250, 250); // Position the window's initial top-left corner
 	glutDisplayFunc(Display); // Register display callback handler for window re-paint
 	glutMainLoop();           // Enter the infinitely event-processing loop
 	return 0;
