@@ -2,6 +2,7 @@
 #include <GL\glut.h>  // GLUT, includes glu.h and gl.h
 #include <stdio.h>
 #include <iostream>
+#define _USE_MATH_DEFINES // for C++
 #include <math.h>
 #include <random>
 #include <vector>
@@ -66,9 +67,9 @@ int main(int argc, char** argv)
 	/*for (int j = 0; j < 15; ++j)
 	{*/
 
-		for (unsigned int i = 0; i < 10 * pow(2, 8); i++)
+		for (unsigned int i = 0; i < 10 * pow(2, 5); i++)
 		{
-			points->push_back(new Point((float)rand() / RAND_MAX - 0.5f, (float)rand() / RAND_MAX - 0.5f, (float)rand() / RAND_MAX));
+			points->push_back(new Point(cos((float)rand() / RAND_MAX * M_PI * 2) * (float)rand() / RAND_MAX * 0.5f, sin((float)rand() / RAND_MAX * M_PI * 2) * (float)rand() / RAND_MAX * 0.5f, 0));
 			//cout << "points[" << i << "] (X, Y) = (" << (*points)[i]->X << ", " << (*points)[i]->Y << ")" << endl;
 		}
 
