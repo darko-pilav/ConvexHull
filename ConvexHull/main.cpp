@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 		{
 			double phi = (float)rand() / RAND_MAX * M_PI * 2;
 			double r = (float)rand() / RAND_MAX * 0.5f;
-			points->push_back(new Point(cos(phi) * r, sin(phi) * r, 0));
+			points->push_back(new Point(cos(phi) * r, sin(phi) * r, 0, points->size()));
 			//cout << "points[" << i << "] (X, Y) = (" << (*points)[i]->X << ", " << (*points)[i]->Y << ")" << endl;
 		}
 

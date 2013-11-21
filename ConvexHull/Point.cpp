@@ -3,21 +3,23 @@
 
 Point::Point()
 {
-	Init(0, 0, 0);
+	Init(0, 0, 0, 0);
 }
 
-Point::Point(double x, double y, double z)
+Point::Point(double x, double y, double z, int index)
 {
-	Init(x, y, z);
+	Init(x, y, z, index);
 }
 
 Point::~Point()
 {
 }
 
-void Point::Init(double x, double y, double z)
+void Point::Init(double x, double y, double z, int index)
 {
 	X = x;
 	Y = y;
 	Z = z;
+
+	Index = index;
 }

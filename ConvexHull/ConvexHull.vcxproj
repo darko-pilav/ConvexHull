@@ -73,13 +73,16 @@
   <ItemGroup>
     <ClCompile Include="HeapSort.cpp" />
     <ClCompile Include="Hull2D.cpp" />
+    <ClCompile Include="Hull3D.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Point.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeapSort.h" />
     <ClInclude Include="Hull2D.h" />
+    <ClInclude Include="Hull3D.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Vec3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
