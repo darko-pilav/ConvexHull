@@ -17,6 +17,7 @@ using namespace std;
 
 vector<Point*>* points = new vector<Point*>();
 vector<Point*>* hull2D;
+vector<Point*>* hull3D;
 
 //Handler for window-repaint event. Call back when the window first appears and
 //whenever the window needs to be re-painted.
@@ -27,13 +28,13 @@ void Display()
 
 	// Draw a Red 1x1 Square centered at origin
 	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-	glColor3f(1.0f, 0.0f, 0.0f); // Red
+	glColor3f(1.0f, 0.0f, 0.0f);	// Red
 	for (int i = 0; i < points->size(); i++)
 	{
-		glVertex2f((*points)[i]->X - 0.001f, (*points)[i]->Y - 0.001f);    // x, y
-		glVertex2f((*points)[i]->X + 0.001f, (*points)[i]->Y - 0.001f);
-		glVertex2f((*points)[i]->X + 0.001f, (*points)[i]->Y + 0.001f);
-		glVertex2f((*points)[i]->X - 0.001f, (*points)[i]->Y + 0.001f);
+		glVertex3f((*points)[i]->X - 0.001f, (*points)[i]->Y - 0.001f, (*points)[i]->Z - 0.001f);    // x, y, z
+		glVertex3f((*points)[i]->X + 0.001f, (*points)[i]->Y - 0.001f, (*points)[i]->Y - 0.001f);    // x, y, z
+		glVertex3f((*points)[i]->X + 0.001f, (*points)[i]->Y + 0.001f, (*points)[i]->Y - 0.001f);    // x, y, z
+		glVertex3f((*points)[i]->X - 0.001f, (*points)[i]->Y + 0.001f, (*points)[i]->Y - 0.001f);    // x, y, z
 	}
 	glEnd();
 
@@ -66,59 +67,41 @@ int main(int argc, char** argv)
 	
 	QueryPerformanceFrequency(&frequency);
 
-	/*for (int j = 0; j < 15; ++j)
-	{*/
+	for (unsigned int i = 0; i < 10 * pow(2, 0); i++)
+	{
+		double theta = (float)rand() / RAND_MAX * M_PI * 2;
+		double phi = (float)rand() / RAND_MAX * M_PI * 2;
+		double r = (float)rand() / RAND_MAX * 0.5f;
+		points->push_back(new Point(sin(theta) * cos(phi) * r, sin(theta) * sin(phi) * r, cos(theta) * r, points->size()));
+	}
 
-		for (unsigned int i = 0; i < 10 * pow(2, 10); i++)
-		{
-			double phi = (float)rand() / RAND_MAX * M_PI * 2;
-			double r = (float)rand() / RAND_MAX * 0.5f;
-			points->push_back(new Point(cos(phi) * r, sin(phi) * r, 0, points->size()));
-			//cout << "points[" << i << "] (X, Y) = (" << (*points)[i]->X << ", " << (*points)[i]->Y << ")" << endl;
-		}
+	cout << endl;
 
-		cout << endl;
+	cout << "Started Sorting..." << endl;
 
-		cout << "Started Sorting..." << endl;
-
-		QueryPerformanceCounter(&t1);
-		sorter.Sort(points);
-		QueryPerformanceCounter(&t2);
+	QueryPerformanceCounter(&t1);
+	sorter.Sort(points);
+	QueryPerformanceCounter(&t2);
 		
-		cout << "Finished Sorting in " << (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart << "ms ..." << endl << endl;
-		/*
-		for (int i = 0; i < points->size(); i++)
-			cout << "points[" << i << "] (X, Y) = (" << (*points)[i]->X << ", " << (*points)[i]->Y << ")" << endl;*/
+	cout << "Finished Sorting in " << (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart << "ms ..." << endl << endl;
 
-		cout << endl << "Started Searching for Hull..." << endl;
+	cout << endl << "Started Searching for Hull..." << endl;
 		
-		QueryPerformanceCounter(&t3);
-		hull2D = hullFinder2D.FindHull(points);
-		QueryPerformanceCounter(&t4);
+	QueryPerformanceCounter(&t3);
+	hull2D = hullFinder2D.FindHull(points);
+	QueryPerformanceCounter(&t4);
 
-		cout << "Finished Searching for Hull in " << (t4.QuadPart - t3.QuadPart) * 1000.0 / frequency.QuadPart << "ms ..." << endl;
+	cout << "Finished Searching for Hull in " << (t4.QuadPart - t3.QuadPart) * 1000.0 / frequency.QuadPart << "ms ..." << endl;
+	cout << endl;
+	cout << "Number of points: " << points->size() << ", Number of points in hull: " << hull2D->size() << ", Total time: " << (t2.QuadPart - t1.QuadPart + t4.QuadPart - t3.QuadPart) * 1000.0 / frequency.QuadPart << "ms" << endl;
 
-		cout << endl;
-		/*
-		for (unsigned int i = 0; i < hull2D->size(); i++)
-		{
-			cout << "hull[" << i << "] (X, Y) = (" << (*hull2D)[i]->X << ", " << (*hull2D)[i]->Y << ")" << endl;
-		}*/
-		cout << "Number of points: " << points->size() << ", Number of points in hull: " << hull2D->size() << ", Total time: " << (t2.QuadPart - t1.QuadPart + t4.QuadPart - t3.QuadPart) * 1000.0 / frequency.QuadPart << "ms" << endl;
 
-		//for (int i = 0; i < points->size(); i++)
-		//	delete (*points)[i];
 
-		//points->clear();
-		//hull2D->clear();
-
-	//}*/
-		
-	glutInit(&argc, argv);                 // Initialize GLUT
-	glutCreateWindow("OpenGL Setup Test"); // Create a window with the given title
-	glutInitWindowSize(1024, 768);   // Set the window's initial width & height
-	glutInitWindowPosition(250, 250); // Position the window's initial top-left corner
-	glutDisplayFunc(Display); // Register display callback handler for window re-paint
-	glutMainLoop();           // Enter the infinitely event-processing loop
+	glutInit(&argc, argv);					// Initialize GLUT
+	glutCreateWindow("OpenGL Setup Test");	// Create a window with the given title
+	glutInitWindowSize(1024, 768);			// Set the window's initial width & height
+	glutInitWindowPosition(250, 250);		// Position the window's initial top-left corner
+	glutDisplayFunc(Display);				// Register display callback handler for window re-paint
+	glutMainLoop();							// Enter the infinitely event-processing loop
 	return 0;
 }
