@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 	/*for (int j = 0; j < 15; ++j)
 	{*/
 
-		for (unsigned int i = 0; i < 10 * pow(2, 5); i++)
+		for (unsigned int i = 0; i < 10 * pow(2, 10); i++)
 		{
 			double phi = (float)rand() / RAND_MAX * M_PI * 2;
 			double r = (float)rand() / RAND_MAX * 0.5f;

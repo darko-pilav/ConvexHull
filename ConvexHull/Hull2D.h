@@ -14,7 +14,7 @@ public:
 	static void FindTangentIndex(vector<Point*> *pointsA, unsigned int &aTangentIndex, vector<Point*> *pointsB, unsigned int &bTangentIndex, bool isLeftTangent);
 
 private:
-	static vector<Point*>* FindHullOfSubset(vector<Point*> *points, int startIndex, unsigned int stopIndex);
+	static vector<Point*>* FindHullOfSubset(vector<Point*> *points, unsigned int startIndex, unsigned int stopIndex);
 
 	static vector<Point*>* Merge(vector<Point*> *pointsA, vector<Point*> *pointsB);
 

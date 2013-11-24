@@ -14,8 +14,7 @@ Hull2D::~Hull2D()
 
 vector<Point*>* Hull2D::FindHull(vector<Point*> *points)
 {
-	unsigned int maxSizeIndex = points->size() - 1;
-	return FindHullOfSubset(points, 0, maxSizeIndex);
+	return FindHullOfSubset(points, 0, points->size() - 1);
 }
 
 
@@ -24,27 +23,29 @@ void Hull2D::FindTangentIndex(vector<Point*> *pointsA, unsigned int &aTangentInd
 {
 	//Leftmost and rightmost points in set are the starting/ending points for tangent-point searches.
 	unsigned int leftIndex, rightIndex;
+	
 	FindOutermostPoints(pointsA, leftIndex, rightIndex);
 	aTangentIndex = (isLeftTangent ? leftIndex : rightIndex);
+	unsigned int aOrig = (isLeftTangent ? rightIndex : leftIndex);
+	
 	FindOutermostPoints(pointsB, leftIndex, rightIndex);
 	bTangentIndex = (isLeftTangent ? leftIndex : rightIndex);
+	unsigned int bOrig = (isLeftTangent ? rightIndex : leftIndex);
 
 	//The left and right indices are passed as references and can therefore change. 
 	//Since we need the original value as an endpoint of the search, we copy the values
-	unsigned int aOrig = aTangentIndex;
-	unsigned int bOrig = bTangentIndex;
-
 	//Search for left/right tangent writes directly into the parameters passed as a reference.
 	FindTangent(pointsA, aTangentIndex, aOrig, pointsB, bTangentIndex, bOrig, isLeftTangent);
 }
 
 
 //Method called recursively to divide set until case is trivial and then recombine subsets.
-vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, int startIndex, unsigned int endIndex)
+vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, unsigned int startIndex, unsigned int endIndex)
 {
 	if (endIndex - startIndex > 2) 	//if more than three Points in set, subdivide it and merge the subdivision.
 	{
 		unsigned int midIndex = startIndex + (endIndex - startIndex) / 2;
+
 		return Merge(FindHullOfSubset(points, startIndex, midIndex), FindHullOfSubset(points, midIndex + 1, endIndex));
 	}
 	else //if three or less points, we have a trivial case -> add to temporary hull
@@ -69,7 +70,7 @@ vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, int startIndex,
 		}
 		else
 		{
-			for (unsigned int i = startIndex; i <= endIndex; ++i)
+			for (unsigned int i = 0; i <= endIndex - startIndex; ++i)
 				hullPoints->push_back((*points)[endIndex - i]);
 		}
 
@@ -145,11 +146,7 @@ void Hull2D::FindTangent(vector<Point*> *pointsA, unsigned int& aRightMostIndex,
 	lastIndexB = isLeftTangent ? aOtherIndex : bOtherIndex;
 
 
-	float slopeA;
-	bool aChanged = true;
-	float slopeB;
-	bool bChanged = true;
-	float slopeAB;
+	double slopeAB;
 
 	bool foundBIndex = false;
 	while (foundBIndex == false)
