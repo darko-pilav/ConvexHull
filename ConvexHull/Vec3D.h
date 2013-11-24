@@ -11,7 +11,7 @@ public:
 	{
 		X = pt2.X - pt1.X;
 		Y = pt2.Y - pt1.Y;
-		Z = pt2.Y - pt1.Y;
+		Z = pt2.Z - pt1.Z;
 	}
 
 	~Vec3D() {}

@@ -29,7 +29,7 @@ void Display()
 	// Draw a Red 1x1 Square centered at origin
 	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
 	glColor3f(1.0f, 0.0f, 0.0f);	// Red
-	for (int i = 0; i < points->size(); i++)
+	for (unsigned int i = 0; i < points->size(); i++)
 	{
 		glVertex3f((*points)[i]->X - 0.001f, (*points)[i]->Y - 0.001f, (*points)[i]->Z - 0.001f);    // x, y, z
 		glVertex3f((*points)[i]->X + 0.001f, (*points)[i]->Y - 0.001f, (*points)[i]->Y - 0.001f);    // x, y, z
@@ -41,9 +41,9 @@ void Display()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_POLYGON);              // Each set of 4 vertices form a quad
 	glColor3f(0.0f, 1.0f, 0.0f); // Red
-	for (int i = 0; i < hull2D->size(); i++)
+	for (unsigned int i = 0; i < hull2D->size(); i++)
 	{
-		glVertex2f((*hull2D)[i]->X, (*hull2D)[i]->Y);    // x, y
+		glVertex3f((*hull2D)[i]->X, (*hull2D)[i]->Y, (*hull2D)[i]->Z);    // x, y, z
 	}
 	glEnd();
 
@@ -61,9 +61,9 @@ int main(int argc, char** argv)
 	Hull3D hullFinder3D = Hull3D();
 
 	LARGE_INTEGER frequency;        // ticks per second
-	LARGE_INTEGER t1, t2;           // ticks
-	LARGE_INTEGER t3, t4;           // ticks
-	double elapsedTime;
+	LARGE_INTEGER tStart, tEnd;           // ticks
+	double elapsedTime = 0;
+	double totalTime = 0;
 	
 	QueryPerformanceFrequency(&frequency);
 
@@ -79,22 +79,37 @@ int main(int argc, char** argv)
 
 	cout << "Started Sorting..." << endl;
 
-	QueryPerformanceCounter(&t1);
+	QueryPerformanceCounter(&tStart);
 	sorter.Sort(points);
-	QueryPerformanceCounter(&t2);
+	for (unsigned int i = 0; i < points->size(); ++i)
+		(*points)[i]->Index = i;
+	QueryPerformanceCounter(&tEnd);
 		
-	cout << "Finished Sorting in " << (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart << "ms ..." << endl << endl;
-
-	cout << endl << "Started Searching for Hull..." << endl;
-		
-	QueryPerformanceCounter(&t3);
-	hull2D = hullFinder2D.FindHull(points);
-	QueryPerformanceCounter(&t4);
-
-	cout << "Finished Searching for Hull in " << (t4.QuadPart - t3.QuadPart) * 1000.0 / frequency.QuadPart << "ms ..." << endl;
+	totalTime += (elapsedTime = (tEnd.QuadPart - tStart.QuadPart) * 1000.0 / frequency.QuadPart);
+	cout << "Finished Sorting in " << elapsedTime << "ms ..." << endl << endl;
 	cout << endl;
-	cout << "Number of points: " << points->size() << ", Number of points in hull: " << hull2D->size() << ", Total time: " << (t2.QuadPart - t1.QuadPart + t4.QuadPart - t3.QuadPart) * 1000.0 / frequency.QuadPart << "ms" << endl;
+	cout << "Started Searching for 2D Hull..." << endl;
+		
+	QueryPerformanceCounter(&tStart);
+	hull2D = hullFinder2D.FindHull(points);
+	QueryPerformanceCounter(&tEnd);
 
+	totalTime += (elapsedTime = (tEnd.QuadPart - tStart.QuadPart) * 1000.0 / frequency.QuadPart);
+	cout << "Finished Searching for 2D Hull in " << elapsedTime << "ms ..." << endl;
+	cout << endl;
+	cout << "Started Searching for 3D Hull..." << endl;
+
+	QueryPerformanceCounter(&tStart);
+	hull3D = hullFinder3D.FindHull(points);
+	QueryPerformanceCounter(&tEnd);
+
+	totalTime += (elapsedTime = (tEnd.QuadPart - tStart.QuadPart) * 1000.0 / frequency.QuadPart);
+	cout << "Finished Searching for 3D Hull in " << elapsedTime << "ms ..." << endl;
+	cout << endl;
+	cout << "Total number of points: " << points->size() << endl;
+	cout << "Number of points in 2D Hull: " << hull2D->size() << endl;
+	cout << "Number of points in 3D Hull: " << hull3D->size() << endl;
+	cout << "Total time: " << totalTime << "ms" << endl;
 
 
 	glutInit(&argc, argv);					// Initialize GLUT

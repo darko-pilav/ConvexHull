@@ -12,9 +12,9 @@ public:
 	Point(double x, double y, double z, int index);
 	~Point();
 
-	int Index;
+	unsigned int Index;
 
-	vector<int> neighbours;
+	vector<unsigned int> neighbours;
 
 	operator Vec3D()
 	{
