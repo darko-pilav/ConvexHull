@@ -40,25 +40,6 @@ vector<Point*>* Hull3D::FindHullOfSubset(vector<Point*> *points, unsigned int st
 				(*points)[i]->neighbours.push_back((*points)[j]->Index);
 			}
 		}
-		/*
-		//If there are exactly four points, We have to check the orientation of the neighbour lists.
-		if (endIndex - startIndex == 3)
-		{
-			for (unsigned int i = 0; i <= hullPoints->size(); ++i)
-			{
-				Point* currentPoint = (*hullPoints)[i];
-				int neighbourIndex1 = currentPoint->neighbours[0];
-				int neighbourIndex2 = currentPoint->neighbours[1];
-				int neighbourIndex3 = currentPoint->neighbours[2];
-				Vec3D planeNormVec = Vec3D::CrossP(Vec3D(*(*hullPoints)[i], *(*points)[neighbourIndex1]), Vec3D(*(*hullPoints)[i], *(*points)[neighbourIndex2]));
-
-				double sideIndicator = Vec3D(*(*hullPoints)[i], *(*points)[neighbourIndex3]).DotP(planeNormVec);
-				if (sideIndicator >)
-
-			}
-
-		}*/
-
 
 		return hullPoints;
 	}
@@ -79,13 +60,25 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 	Point* testNeighbour;
 	unsigned int neighbourStartIndex;
 	double candidateCosAngle = 1;
-	Point* candidateNeighbour;
+	Point* candidateNeighbour = NULL;
 	bool isCandidateFromA = true;
+
+	unsigned int startIndexA = 0;
+	for (int i = 0; i < aCurrent->neighbours.size(); i++)
+	{
+		if (aCurrent->neighbours[i] == aLast->Index)
+			startIndexA = (i + 1) % aCurrent->neighbours.size();
+	}
+
 	for (unsigned int i = 0; i < aCurrent->neighbours.size(); i++)
 	{
-		testNeighbour = (*points)[aCurrent->neighbours[i]];
-		Vec3D *candidateEdge = &Vec3D(*aCurrent, *testNeighbour);
-		Vec3D candidatePlaneNorm = currentEdge->NormCrossP(*candidateEdge);
+		//Adding the Size of the vector to the currentIndex because we don't want the index to get negative. The modulo takes care of it afterwards.
+		//Subtract i in order to walk in a counter clockwise order.
+		unsigned int currentIndex = (aCurrent->neighbours.size() + startIndexA - i) % aCurrent->neighbours.size();
+
+		testNeighbour = (*points)[aCurrent->neighbours[currentIndex]];
+		Vec3D candidateEdge = Vec3D(*aCurrent, *testNeighbour);
+		Vec3D candidatePlaneNorm = currentEdge->NormCrossP(candidateEdge);
 
 		double testCosAngle = currentPlaneNorm.DotP(candidatePlaneNorm);
 
@@ -96,9 +89,18 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 		}
 	}
 
+	unsigned int startIndexB = 0;
+	for (int i = 0; i < bCurrent->neighbours.size(); i++)
+	{
+		if (bCurrent->neighbours[i] == bLast->Index)
+			startIndexB = (i + 1) % bCurrent->neighbours.size();
+	}
+
 	for (unsigned int i = 0; i < bCurrent->neighbours.size(); i++)
 	{
-		testNeighbour = (*points)[bCurrent->neighbours[i]];
+		unsigned int currentIndex = (startIndexB + i) % bCurrent->neighbours.size();
+
+		testNeighbour = (*points)[bCurrent->neighbours[currentIndex]];
 		Vec3D *candidateEdge = &Vec3D(*bCurrent, *testNeighbour);
 		Vec3D candidatePlaneNorm = currentEdge->NormCrossP(*candidateEdge);
 
@@ -124,6 +126,8 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 	}
 	lastEdge = currentEdge;
 	currentEdge = &Vec3D(*aCurrent, *bCurrent);
+
+	return points;
 }
 
 /*

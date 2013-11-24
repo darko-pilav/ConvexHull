@@ -14,7 +14,8 @@ Hull2D::~Hull2D()
 
 vector<Point*>* Hull2D::FindHull(vector<Point*> *points)
 {
-	return FindHullOfSubset(points, 0, points->size() - 1);
+	unsigned int maxSizeIndex = points->size() - 1;
+	return FindHullOfSubset(points, 0, maxSizeIndex);
 }
 
 
@@ -22,7 +23,11 @@ vector<Point*>* Hull2D::FindHull(vector<Point*> *points)
 void Hull2D::FindTangentIndex(vector<Point*> *pointsA, unsigned int &aTangentIndex, vector<Point*> *pointsB, unsigned int &bTangentIndex, bool isLeftTangent)
 {
 	//Leftmost and rightmost points in set are the starting/ending points for tangent-point searches.
-	FindOutermostPoints(pointsA, aTangentIndex, aTangentIndex);
+	unsigned int leftIndex, rightIndex;
+	FindOutermostPoints(pointsA, leftIndex, rightIndex);
+	aTangentIndex = (isLeftTangent ? leftIndex : rightIndex);
+	FindOutermostPoints(pointsB, leftIndex, rightIndex);
+	bTangentIndex = (isLeftTangent ? leftIndex : rightIndex);
 
 	//The left and right indices are passed as references and can therefore change. 
 	//Since we need the original value as an endpoint of the search, we copy the values
@@ -35,7 +40,7 @@ void Hull2D::FindTangentIndex(vector<Point*> *pointsA, unsigned int &aTangentInd
 
 
 //Method called recursively to divide set until case is trivial and then recombine subsets.
-vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, unsigned int startIndex, unsigned int endIndex)
+vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, int startIndex, unsigned int endIndex)
 {
 	if (endIndex - startIndex > 2) 	//if more than three Points in set, subdivide it and merge the subdivision.
 	{
@@ -64,8 +69,8 @@ vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, unsigned int st
 		}
 		else
 		{
-			for (unsigned int i = endIndex; i >= startIndex; --i)
-				hullPoints->push_back((*points)[i]);
+			for (unsigned int i = startIndex; i <= endIndex; ++i)
+				hullPoints->push_back((*points)[endIndex - i]);
 		}
 
 		return hullPoints;
@@ -79,7 +84,7 @@ vector<Point*>* Hull2D::Merge(vector<Point*> *pointsA, vector<Point*> *pointsB)
 
 	//writes tangent indices directly into the variables which are passed as a reference
 	FindTangentIndex(pointsA, aLeftTangentIndex, pointsB, bLeftTangentIndex, true);
-	FindTangentIndex(pointsA, aRightTangentIndex, pointsB, bRightTangentIndex, true);
+	FindTangentIndex(pointsA, aRightTangentIndex, pointsB, bRightTangentIndex, false);
 
 	//merged hull points vector
 	vector<Point*> *hullPoints = new vector<Point*>();

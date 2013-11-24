@@ -10,6 +10,7 @@
 #include "Point.h"
 #include "HeapSort.h"
 #include "Hull2D.h"
+#include "Hull3D.h"
 
 using namespace std;
 
@@ -56,6 +57,7 @@ int main(int argc, char** argv)
 	srand(5);
 	HeapSort sorter = HeapSort();
 	Hull2D hullFinder2D = Hull2D();
+	Hull3D hullFinder3D = Hull3D();
 
 	LARGE_INTEGER frequency;        // ticks per second
 	LARGE_INTEGER t1, t2;           // ticks
@@ -111,7 +113,7 @@ int main(int argc, char** argv)
 		//hull2D->clear();
 
 	//}*/
-
+		
 	glutInit(&argc, argv);                 // Initialize GLUT
 	glutCreateWindow("OpenGL Setup Test"); // Create a window with the given title
 	glutInitWindowSize(1024, 768);   // Set the window's initial width & height
