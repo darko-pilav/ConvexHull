@@ -95,6 +95,8 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 
 			if (testCosAngle > candidateCosAngle)
 			{
+				Decouple(*aCurrent, *aLast);
+
 				candidateCosAngle = testCosAngle;
 				candidateNeighbour = testNeighbour;
 			}
@@ -147,4 +149,29 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 	} while (initialIndexA != aCurrent->Index || initialIndexB != bCurrent->Index);
 
 	return points;
+}
+
+//Removes the points from the respective neighbour lists
+void Hull3D::Decouple(Point &point1, Point &point2)
+{
+	if (point1.Index == point2.Index)
+		return;
+
+	for (int i = 0; i < point1.neighbours.size(); i++)
+	{
+		if (point1.neighbours[i] == point2.Index)
+		{
+			point1.neighbours.erase(point1.neighbours.begin() + i);
+			break;
+		}
+	}
+
+	for (int i = 0; i < point2.neighbours.size(); i++)
+	{
+		if (point2.neighbours[i] == point1.Index)
+		{
+			point2.neighbours.erase(point2.neighbours.begin() + i);
+			break;
+		}
+	}
 }
