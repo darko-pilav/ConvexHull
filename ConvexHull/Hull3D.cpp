@@ -58,6 +58,8 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 	unsigned int initialIndexA = aCurrent->Index;
 	unsigned int initialIndexB = bCurrent->Index;
 
+	Point *pointRemovedFromHullA = NULL;
+	Point *pointRemovedFromHullB = NULL;
 
 //TODO check edge case of two-point lists
 //TODO check edge case of no neighbours
@@ -95,13 +97,21 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 
 			if (testCosAngle > candidateCosAngle)
 			{
-				Decouple(*aCurrent, *aLast);
+				if (candidateNeighbour != NULL)
+				{
+					if (candidateNeighbour->Index != aLast->Index)
+						Decouple(*aCurrent, *aLast);
+
+					pointRemovedFromHullA = candidateNeighbour;
+				}
 
 				candidateCosAngle = testCosAngle;
 				candidateNeighbour = testNeighbour;
 			}
 		}
 
+
+		candidateNeighbour == NULL;
 		unsigned int startIndexB = 0;
 		for (unsigned int i = 0; i < bCurrent->neighbours.size(); i++)
 		{
@@ -124,6 +134,14 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 
 			if (testCosAngle > candidateCosAngle)
 			{
+				if (candidateNeighbour != NULL)
+				{
+					if (candidateNeighbour->Index != bLast->Index)
+						Decouple(*bCurrent, *bLast);
+
+					pointRemovedFromHullB = candidateNeighbour;
+				}
+
 				candidateCosAngle = testCosAngle;
 				candidateNeighbour = testNeighbour;
 				isCandidateFromA = false;
@@ -135,6 +153,9 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 			if (isCandidateFromA)
 			{
 				aLast = aCurrent;
+
+				//InsertNeighbourAfter(bCurrent, candidateNeighbour, aCurrent);
+
 				aCurrent = candidateNeighbour;
 			}
 			else
@@ -148,7 +169,15 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 		currentEdge = &Vec3D(*aCurrent, *bCurrent);
 	} while (initialIndexA != aCurrent->Index || initialIndexB != bCurrent->Index);
 
-	return points;
+	if (pointRemovedFromHullA != NULL)
+		RemoveSubGraph(points, pointsA, pointRemovedFromHullA);
+	if (pointRemovedFromHullB != NULL)
+		RemoveSubGraph(points, pointsB, pointRemovedFromHullB);
+
+	pointsA->insert(pointsA->end(), pointsB->begin(), pointsB->end());
+	delete pointsB;
+
+	return pointsA;
 }
 
 //Removes the points from the respective neighbour lists
@@ -174,4 +203,37 @@ void Hull3D::Decouple(Point &point1, Point &point2)
 			break;
 		}
 	}
+}
+
+void Hull3D::RemoveSubGraph(vector<Point*> *allPoints, vector<Point*> *pointsRemoveFrom, Point* pointInGraph)
+{
+	//allocate a list of single bits. It is used to mark which points have been visited already
+	void* visitMap = calloc(pointsRemoveFrom->size(), 1);
+
+	Point* currentPoint = pointInGraph;
+
+	
+	RemoveSubGraphRecursively(allPoints, pointsRemoveFrom, pointInGraph, visitMap);
+}
+
+void Hull3D::RemoveSubGraphRecursively(vector<Point*> *allPoints, vector<Point*> *pointsRemoveFrom, Point* currentPoint, void* visitMap)
+{
+	//check if this point has already been visited. If yes, return.
+	if (((unsigned char*)visitMap)[currentPoint->Index / 8] & (1 << (currentPoint->Index % 8)) > 0)
+		return;
+
+	//mark this point as already visited
+	((unsigned char*)visitMap)[currentPoint->Index / 8] = (1 << (currentPoint->Index % 8));
+
+	for (int i = 0; i < pointsRemoveFrom->size(); i++)
+	{
+		if ((*pointsRemoveFrom)[i]->Index == currentPoint->Index)
+		{
+			pointsRemoveFrom->erase(pointsRemoveFrom->begin() + i);
+			break;
+		}
+	}
+
+	for (int i = 0; i < currentPoint->neighbours.size(); i++)
+		RemoveSubGraphRecursively(allPoints, pointsRemoveFrom, (*allPoints)[currentPoint->neighbours[i]], visitMap);
 }

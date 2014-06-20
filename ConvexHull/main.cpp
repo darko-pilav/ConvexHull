@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 	
 	QueryPerformanceFrequency(&frequency);
 
-	for (unsigned int i = 0; i < 10 * pow(2, 0); i++)
+	for (unsigned int i = 0; i < 10 * pow(2, 5); i++)
 	{
 		double theta = (float)rand() / RAND_MAX * M_PI * 2;
 		double phi = (float)rand() / RAND_MAX * M_PI * 2;

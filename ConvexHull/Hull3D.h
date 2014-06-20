@@ -21,6 +21,8 @@ private:
 	vector<Point*>* Merge(vector<Point*> *points, vector<Point*> *pointsA, vector<Point*> *pointsB);
 
 	void Decouple(Point &point1, Point &point2);
+	void RemoveSubGraph(vector<Point*> *allPoints, vector<Point*> *pointsRemoveFrom, Point* pointOnGraph);
+	void RemoveSubGraphRecursively(vector<Point*> *allPoints, vector<Point*> *pointsRemoveFrom, Point* pointInGraph, void* visitMap);
 
 	// Returns the Cosinus between two planes. There is no reason to calculate the angle since we are only interested in the relative convex angle => the larger the angle, the smaller the cos
 	static double FindCosBetweenPlanes(Vec3D* normalA, Vec3D* edge1B, Vec3D* edge2B)
