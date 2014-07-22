@@ -39,9 +39,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\projects\tfs\ConvexHull\ConvexHull\Libraries\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\projects\tfs\ConvexHull\ConvexHull\Libraries\lib;$(LibraryPath)</LibraryPath>
-    <ReferencePath>D:\projects\tfs\ConvexHull\ConvexHull\Libraries\lib;$(ReferencePath)</ReferencePath>
+    <IncludePath>$(ProjectDir)Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <ReferencePath>$(ProjectDir)Libraries\lib;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

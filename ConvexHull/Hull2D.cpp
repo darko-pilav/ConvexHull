@@ -17,7 +17,7 @@ vector<Point*>* Hull2D::FindHull(vector<Point*> *points)
 	return FindHullOfSubset(points, 0, points->size() - 1);
 }
 
-//Method called recursively to dividing set until case is trivial and the recombine subsets.
+//Method called recursively for dividing set until case is trivial and then recombining subsets.
 vector<Point*>* Hull2D::FindHullOfSubset(vector<Point*> *points, int startIndex, int endIndex)
 {
 
