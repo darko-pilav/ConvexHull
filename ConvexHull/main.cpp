@@ -7,6 +7,7 @@
 #include <GL/glut.h>  // GLUT, includes glu.h and gl.h
 #include <stdio.h>
 #include <iostream>
+#define _USE_MATH_DEFINES // has to be in front of include <math.h>
 #include <math.h>
 #include <random>
 #include <vector>
@@ -14,8 +15,6 @@
 #include "Point.h"
 #include "HeapSort.h"
 #include "Hull2D.h"
-
-#define _USE_MATH_DEFINES // for C++
 
 using namespace std;
 
@@ -125,7 +124,7 @@ int main(int argc, char** argv)
 	cout << endl;
 
 #if defined(_WIN32) || defined(WIN32)
-	cout << "Number of points: " << points->size() << ", Number of points in hull: " << hull2D->size() << ", Total time: " << (t2.tv_usec - t1.tv_usec + t4.tv_usec - t3.tv_usec) / 1000.0 << "ms" << endl;
+	cout << "Number of points: " << points->size() << ", Number of points in hull: " << hull2D->size() << ", Total time: " << (t2.QuadPart - t1.QuadPart + t4.QuadPart - t3.QuadPart) / 1000.0 << "ms" << endl;
 #elif defined(__linux) || defined(linux)
 	cout << "Number of points: " << points->size() << ", Number of points in hull: " << hull2D->size() << ", Total time: " << (t2.tv_usec - t1.tv_usec + t4.tv_usec - t3.tv_usec) << "ms" << endl;
 #endif
