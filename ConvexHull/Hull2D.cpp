@@ -135,11 +135,6 @@ void Hull2D::FindTangent(vector<Point*> *pointsA, int& aRightMostIndex, int aOth
 	workingIndexB = isLeftTangent ? &aRightMostIndex : &bRightMostIndex;
 	lastIndexB = isLeftTangent ? aOtherIndex : bOtherIndex;
 
-
-	float slopeA;
-	bool aChanged = true;
-	float slopeB;
-	bool bChanged = true;
 	float slopeAB;
 
 	bool foundBIndex = false;
