@@ -21,7 +21,7 @@ OBJECTFILES= \
 
 # Build Targets
 ${EXECUTABLE}: ${OBJECTFILES}
-	${CXX} ${LFLAGS} ${OBJECTFILES} -o ${EXECUTABLE}
+	${CXX} ${OBJECTFILES} -o ${EXECUTABLE} ${LFLAGS}
 
 ${OBJECTDIR}/HeapSort.o: HeapSort.cpp 
 	${MKDIR} -p ${OBJECTDIR}
