@@ -19,7 +19,7 @@ vector<Point*>* Hull3D::FindHull(vector<Point*>* points)
 
 vector<Point*>* Hull3D::FindHullOfSubset(vector<Point*> *points, unsigned int startIndex, unsigned int endIndex)
 {
-	if (endIndex - startIndex > 2) 	//if more than four Points in set, subdivide it and merge the subdivision.
+	if (endIndex - startIndex > 3) 	//if more than four Points in set, subdivide it and merge the subdivision.
 	{
 		unsigned int midIndex = startIndex + (endIndex - startIndex) / 2;
 		return Merge(points, FindHullOfSubset(points, startIndex, midIndex), FindHullOfSubset(points, midIndex + 1, endIndex));
@@ -39,6 +39,12 @@ vector<Point*>* Hull3D::FindHullOfSubset(vector<Point*> *points, unsigned int st
 				
 				(*points)[i]->neighbours.push_back((*points)[j]->Index);
 			}
+		}
+
+		// if we have exactly thre n
+		if (endIndex - startIndex == 3)
+		{
+
 		}
 
 		return hullPoints;
@@ -63,9 +69,15 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 
 //TODO check edge case of two-point lists
 //TODO check edge case of no neighbours
+	Vec3D lastPlaneNorm;
 	do
 	{
 		Vec3D currentPlaneNorm = lastEdge->NormCrossP(*currentEdge);
+		if (currentPlaneNorm.X == 0 && currentPlaneNorm.Y == 0 && currentPlaneNorm.Z == 0)
+			currentPlaneNorm = lastPlaneNorm;
+		else
+			lastPlaneNorm = currentPlaneNorm;
+
 
 		Point* testNeighbour;
 		double candidateCosAngle = -1;
@@ -83,7 +95,7 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 			}
 		}
 
-		for (unsigned int i = 0; i < aCurrent->neighbours.size() - 1; i++)
+		for (unsigned int i = 0; i < aCurrent->neighbours.size(); i++)
 		{
 			//Adding the Size of the vector to the currentIndex because we don't want the index to get negative. The modulo takes care of it afterwards.
 			//Subtract i in order to walk in a counter clockwise order.
@@ -107,11 +119,12 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 
 				candidateCosAngle = testCosAngle;
 				candidateNeighbour = testNeighbour;
+				candidateFound = true;
 			}
 		}
 
 
-		candidateNeighbour == NULL;
+		candidateNeighbour = NULL;
 		unsigned int startIndexB = 0;
 		for (unsigned int i = 0; i < bCurrent->neighbours.size(); i++)
 		{
@@ -122,7 +135,7 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 			}
 		}
 
-		for (unsigned int i = 0; i < bCurrent->neighbours.size() - 1; i++)
+		for (unsigned int i = 0; i < bCurrent->neighbours.size(); i++)
 		{
 			unsigned int currentIndex = (startIndexB + i) % bCurrent->neighbours.size();
 
@@ -145,6 +158,7 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 				candidateCosAngle = testCosAngle;
 				candidateNeighbour = testNeighbour;
 				isCandidateFromA = false;
+				candidateFound = true;
 			}
 		}
 
@@ -168,12 +182,12 @@ vector<Point*>* Hull3D::Merge(vector<Point*> *points, vector<Point*> *pointsA, v
 		lastEdge = currentEdge;
 		currentEdge = &Vec3D(*aCurrent, *bCurrent);
 	} while (initialIndexA != aCurrent->Index || initialIndexB != bCurrent->Index);
-
+	/*
 	if (pointRemovedFromHullA != NULL)
 		RemoveSubGraph(points, pointsA, pointRemovedFromHullA);
 	if (pointRemovedFromHullB != NULL)
 		RemoveSubGraph(points, pointsB, pointRemovedFromHullB);
-
+*/
 	pointsA->insert(pointsA->end(), pointsB->begin(), pointsB->end());
 	delete pointsB;
 
@@ -186,7 +200,7 @@ void Hull3D::Decouple(Point &point1, Point &point2)
 	if (point1.Index == point2.Index)
 		return;
 
-	for (int i = 0; i < point1.neighbours.size(); i++)
+	for (unsigned int i = 0; i < point1.neighbours.size(); i++)
 	{
 		if (point1.neighbours[i] == point2.Index)
 		{
@@ -195,7 +209,7 @@ void Hull3D::Decouple(Point &point1, Point &point2)
 		}
 	}
 
-	for (int i = 0; i < point2.neighbours.size(); i++)
+	for (unsigned int i = 0; i < point2.neighbours.size(); i++)
 	{
 		if (point2.neighbours[i] == point1.Index)
 		{
@@ -225,7 +239,7 @@ void Hull3D::RemoveSubGraphRecursively(vector<Point*> *allPoints, vector<Point*>
 	//mark this point as already visited
 	((unsigned char*)visitMap)[currentPoint->Index / 8] = (1 << (currentPoint->Index % 8));
 
-	for (int i = 0; i < pointsRemoveFrom->size(); i++)
+	for (unsigned int i = 0; i < pointsRemoveFrom->size(); i++)
 	{
 		if ((*pointsRemoveFrom)[i]->Index == currentPoint->Index)
 		{
@@ -234,6 +248,6 @@ void Hull3D::RemoveSubGraphRecursively(vector<Point*> *allPoints, vector<Point*>
 		}
 	}
 
-	for (int i = 0; i < currentPoint->neighbours.size(); i++)
+	for (unsigned int i = 0; i < currentPoint->neighbours.size(); i++)
 		RemoveSubGraphRecursively(allPoints, pointsRemoveFrom, (*allPoints)[currentPoint->neighbours[i]], visitMap);
 }

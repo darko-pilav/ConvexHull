@@ -30,9 +30,18 @@ public:
 	{
 		Vec3D normCross = Vec3D((vec1.Y*vec2.Z - vec1.Z*vec2.Y), (vec1.Z*vec2.X - vec1.X*vec2.Y), (vec1.X*vec2.Y - vec1.Y*vec2.X));
 		double normCrossLen = normCross.Length();
-		normCross.X /= normCrossLen;
-		normCross.Y /= normCrossLen;
-		normCross.Z /= normCrossLen;
+		if (normCrossLen == 0)
+		{
+			normCross.X = 0;
+			normCross.Y = 0;
+			normCross.Z = 0;
+		}
+		else
+		{
+			normCross.X /= normCrossLen;
+			normCross.Y /= normCrossLen;
+			normCross.Z /= normCrossLen;
+		}
 
 		return normCross;
 	}
